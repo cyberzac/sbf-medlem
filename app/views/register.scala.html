@@ -1,0 +1,16 @@
+@(myForm: Form[model.Member])
+
+@main("Medlemsanmälan") {
+
+@helper.form(action = routes.Application.submit) {
+
+@helper.inputText(myForm("replyto"))
+@helper.inputText(myForm("namn"))
+@helper.inputText(myForm("adress"))
+@helper.inputText(myForm("postnummer"))
+@helper.inputText(myForm("postort"))
+@helper.checkbox(myForm("jag-godkanner-foreningens-stadgar"))
+@helper.inputText(myForm("comments"))
+<button type="submit" class="btn">Skicka</button>
+}
+}
