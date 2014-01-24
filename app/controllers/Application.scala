@@ -1,8 +1,10 @@
 package controllers
 
-import play.api._
+import play.api.Play.current
 import play.api.mvc._
-import model.Member
+import model.{Member, MemberForm}
+import play.api.db._
+import anorm._
 
 object Application extends Controller {
 
@@ -22,17 +24,30 @@ object Application extends Controller {
       "postnummer" -> text,
       "postort" -> text,
       "comments" -> text,
-      "jag-godkanner-foreneinges-stadgar" -> boolean
-    ) (Member.apply)(Member.unapply)
+      "jag-godkanner-foreningens-stadgar" -> boolean
+    )(MemberForm.apply)(MemberForm.unapply)
   )
 
   def register = Action {
-    Ok { views.html.register(form)}
+    Ok {
+      views.html.register(form)
+    }
   }
 
-  def submit = Action {  implicit request =>
-    val member: Member = form.bindFromRequest.get
-    Ok(views.html.registered("Du är anmäld ", member))
+  def submit = Action {
+    implicit request =>
+      val memberForm: MemberForm = form.bindFromRequest.get
+
+      if (!memberForm.approved)
+        NotAcceptable(views.html.error("Du måste acceptera stadgarna"))
+      else {
+        val member = Member(memberForm)
+        DB.withConnection {
+          implicit c =>
+            val result: Boolean = SQL("Select 1").execute()
+            Ok(views.html.registered("Du är anmäld " + result, member))
+        }
+      }
   }
 
 }

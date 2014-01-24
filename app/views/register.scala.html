@@ -1,4 +1,4 @@
-@(myForm: Form[model.Member])
+@(myForm: Form[model.MemberForm])
 
 @main("Medlemsanmälan") {
 
@@ -10,7 +10,7 @@
 @helper.inputText(myForm("postnummer"))
 @helper.inputText(myForm("postort"))
 @helper.checkbox(myForm("jag-godkanner-foreningens-stadgar"))
-@helper.inputText(myForm("comments"))
+@helper.textarea(myForm("comments"))
 <button type="submit" class="btn">Skicka</button>
 }
 }
