@@ -5,8 +5,8 @@ import play.api.db.DB
 import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
-import org.slf4j.LoggerFactory
-import java.util.Date
+import play.Logger
+import AnormExtension._
 
 /**
  *
@@ -24,7 +24,6 @@ case class Member(
                    )  {
 
   def createdDateTime: DateTime = new DateTime(createdAt)
-  def createdDate: Date = createdDateTime.toDate
 
 }
 
@@ -32,19 +31,17 @@ object Member {
 
   def apply(f: MemberForm) = new Member(f.epost, f.name, f.address, f.zip, f.city, f.comment)
 
-  val log = LoggerFactory.getLogger(this.getClass)
-
   val simple = {
-    get[Pk[Long]]("member.id") ~
+//    get[Pk[Long]]("member.id") ~
       get[String]("member.email") ~
       get[String]("member.name") ~
       get[String]("member.address") ~
       get[String]("member.zip") ~
       get[String]("member.city") ~
       get[String]("member.comment") ~
-      get[Date]("member.created_date") ~
+      get[DateTime]("member.created_date") ~
       get[Boolean]("member.approved") map {
-      case id ~ email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved => {
+      case email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved => {
         new Member(
 //          Some(id),
           email,
@@ -53,7 +50,7 @@ object Member {
           zip,
           city,
           comment,
-          created.getTime,
+          created.getMillis,
           approved
         )
       }
@@ -67,7 +64,7 @@ object Member {
         SQL(
           """
             insert into member values (
-              email, name, address, zip, city, comment, created_date, approved
+              {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
             )
           """
         ).on(
@@ -77,22 +74,22 @@ object Member {
             'zip -> member.zip,
             'city -> member.city,
             'comment -> member.comment,
-            'created_date -> member.createdDate,
+            'created_date -> member.createdDateTime,
             'approved -> member.approved
           ).executeUpdate()
-        log.debug("Stored member {}", member)
+        Logger.debug("Stored member {}", member)
         member // Todo read back id.
     }
   }
 
-  def findById(id: Pk[Long]): Option[Member] = {
-    DB.withConnection {
-      implicit connection =>
-        SQL("select * from member where id = {id} ").on(
-          'id -> id
-        ).as(Member.simple.singleOpt)
-    }
-  }
+//  def findById(id: Pk[Long]): Option[Member] = {
+//    DB.withConnection {
+//      implicit connection =>
+//        SQL("select * from member where id = {id} ").on(
+//          'id -> id
+//        ).as(Member.simple.singleOpt)
+//    }
+//  }
 
   def findByEmail(email: String): Option[Member] = {
     DB.withConnection {
