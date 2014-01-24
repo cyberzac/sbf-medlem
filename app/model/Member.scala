@@ -57,6 +57,8 @@ object Member {
     }
   }
 
+  def create(memberForm:MemberForm):Member = create(Member(memberForm))
+
   def create(member: Member): Member = {
     DB.withConnection {
       implicit connection =>

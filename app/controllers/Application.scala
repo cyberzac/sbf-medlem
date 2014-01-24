@@ -41,12 +41,8 @@ object Application extends Controller {
       if (!memberForm.approved)
         NotAcceptable(views.html.error("Du måste acceptera stadgarna"))
       else {
-        val member = Member(memberForm)
-        DB.withConnection {
-          implicit c =>
-            val result: Boolean = SQL("Select 1").execute()
-            Ok(views.html.registered("Du är anmäld " + result, member))
-        }
+        val member = Member.create(memberForm)
+        Ok(views.html.registered("Du är anmäld", member))
       }
   }
 
