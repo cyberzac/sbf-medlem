@@ -9,8 +9,8 @@ import play.api.test.Helpers._
  */
 class MemberSpec extends Specification with WithTestDatabase {
 
-  val member: Member = Member("email", "Test Testson", "address", "zip", "city", "comment")
-  val member2: Member = Member("email2", "Test Test Testson", "address2", "zip2", "city2", "comment2")
+  val member: Member = Member("test@email.com", "Test Testson", "address", "zip", "city", "comment")
+  val member2: Member = Member("test2@email.com", "Test2 Test Testson", "address2", "zip2", "city2", "comment2")
 
   "have a create method" in running(FakeApplication()) {
     val expected = Member.create(member)
