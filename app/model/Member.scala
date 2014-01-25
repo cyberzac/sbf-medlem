@@ -122,7 +122,19 @@ object Member {
     searchForEmail(what)
   }
 
+  import play.api.libs.json._
+  import play.api.libs.functional.syntax._
 
+  implicit val memberWrites: Writes[Member] =  (
+    (__ \ 'email).write[String] and
+    (__ \ 'name).write[String] and
+    (__ \ 'address).write[String] and
+    (__ \ 'zip).write[String] and
+    (__ \ 'city).write[String] and
+    (__ \ 'comments).write[String] and
+    (__ \ 'created_date).write[Long] and
+    (__ \ 'approved).write[Boolean]
+    )(unlift(Member.unapply))
 
 }
 

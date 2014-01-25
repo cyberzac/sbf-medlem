@@ -7,6 +7,7 @@ GET    /                           controllers.Application.index
 GET   /list                      controllers.Application.list
 GET   /newMember               controllers.Application.newMember
 GET  /search/:what        controllers.Application.search(what: String)
+GET  /api/list             controllers.Api.list
 POST   /save               controllers.Application.save
 
 # Map static resources from the /public folder to the /assets URL path
