@@ -1,0 +1,18 @@
+@(members:List[model.Member])
+
+@main("Medlemslista") {
+<table>
+    @for(m <- members) {
+    <tr>
+    <td>@m.email </td>
+    <td>@m.name </td>
+    <td>@m.address </td>
+    <td>@m.zip</td>
+    <td>@m.city</td>
+    <td>@m.comment</td>
+    <td>@m.createdDateTime</td>
+     <td>@m.approved</td>
+    </tr>
+    }
+</table>
+}

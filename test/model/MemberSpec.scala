@@ -24,5 +24,23 @@ class MemberSpec extends Specification with WithTestDatabase {
     expected must_== Some(member)
   }
 
+ "have a findAll method" in running(FakeApplication()) {
+    Member.create(member)
+    Member.create(member2)
+    val expected: List[Member] = Member.findAll
+    expected must_== List(member, member2)
+  }
 
+ "have a searchForEmail method" in running(FakeApplication()) {
+    setupSearch
+    Member.searchForEmail("kalle").size must_== 1
+    Member.searchForEmail("email.com").size must_== 2
+    Member.searchForEmail("nomail").size must_== 0
+  }
+
+def setupSearch = {
+  Member.create(Member("kalle@email.com", "Kalle Eriksson", "Prinsgatan 11", "110 10", "Stockholm", "Yepp"))
+  Member.create(Member("palle@email.com", "Palle Berg", "Storgatan 11", "130 10", "Stockholm", "Sinnes"))
+  Member.create(Member("nina@gmail.com", "Nina Grusberg", "Pl 11333", "930 10", "Grusträsk", "Hej"))
+}
 }

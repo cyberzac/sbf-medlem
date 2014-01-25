@@ -2,7 +2,7 @@
 
 @main("Medlemsanmälan") {
 
-@helper.form(action = routes.Application.submit) {
+@helper.form(action = routes.Application.save) {
 
 @helper.inputText(myForm("replyto"))
 @helper.inputText(myForm("namn"))
@@ -11,6 +11,6 @@
 @helper.inputText(myForm("postort"))
 @helper.checkbox(myForm("jag-godkanner-foreningens-stadgar"))
 @helper.textarea(myForm("comments"))
-<button type="submit" class="btn">Skicka</button>
+<button type="submit" class="btn btn-success">Skicka</button>
 }
 }

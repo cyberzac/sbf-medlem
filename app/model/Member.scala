@@ -105,9 +105,25 @@ object Member {
   def findAll: scala.List[Member] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from mamber").as(Member.simple *)
+        SQL("select * from member").as(Member.simple *)
     }
   }
+
+  def searchForEmail(email: String): List[Member] = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select * from member where email like {email} ").on(
+          'email ->  s"%${email}%"
+        ).as(Member.simple *)
+    }
+  }
+
+  def searchAll(what: String): List[Member] = {
+    searchForEmail(what)
+  }
+
+
+
 }
 
 case class MemberForm(
