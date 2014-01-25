@@ -3,8 +3,14 @@
  */
 
 
-$("#nav-search").on("submit", function (e) {
+$("#nav-search").blur(function (e) {
     var what = $("#what").val();
     document.location = "/search/" + what;
-    e.preventDefault();
-})
+    //e.preventDefault();
+});
+
+$("#what").blur(function (e) {
+    var what = $("#what").val();
+    document.location = "/search/" + what;
+    //e.preventDefault();
+});

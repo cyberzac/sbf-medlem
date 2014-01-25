@@ -1,18 +1,30 @@
 @(members:List[model.Member])
 
 @main("Medlemslista") {
-<table>
+<table class="table table-striped" id="members">
+    <thead>
+    <th>Namn</th>
+    <th>Mejl</th>
+    <th>Adress</th>
+    <th>Postnummer</th>
+    <th>Ort</th>
+    <th>Kommentar</th>
+    <th>Skapad</th>
+    <th>Godkänd</th>
+    </thead>
+    <tbody>
     @for(m <- members) {
     <tr>
-    <td>@m.email </td>
-    <td>@m.name </td>
-    <td>@m.address </td>
-    <td>@m.zip</td>
-    <td>@m.city</td>
-    <td>@m.comment</td>
-    <td>@m.createdDateTime</td>
-     <td>@m.approved</td>
+        <td>@m.email</td>
+        <td>@m.name</td>
+        <td>@m.address</td>
+        <td>@m.zip</td>
+        <td>@m.city</td>
+        <td>@m.comment</td>
+        <td>@m.createdDateTime</td>
+        <td>@m.approved</td>
     </tr>
     }
+    </tbody>
 </table>
 }
