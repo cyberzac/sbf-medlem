@@ -6,7 +6,7 @@ create table member (
     zip varchar(255),
     city varchar(255),
     comment varchar(255),
-    created_date timestamp(6) not null,
+    created_date timestamp not null,
     approved boolean not null
 );
 

@@ -19,7 +19,7 @@ case class Member(
                    zip: String,
                    city: String,
                    comment: String,
-                   createdAt: Long = DateTime.now.getMillis,
+                   createdAt: Long = DateTime.now.millisOfSecond().setCopy(0).getMillis, // Remove the millis
                    approved: Boolean = false
                    )  {
 
