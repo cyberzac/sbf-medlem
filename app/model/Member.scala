@@ -109,7 +109,7 @@ object Member {
     }
   }
 
-  def searchForEmail(email: String): List[Member] = {
+  def searchByEmail(email: String): List[Member] = {
     DB.withConnection {
       implicit connection =>
         SQL("select * from member where email like {email} ").on(
@@ -119,7 +119,7 @@ object Member {
   }
 
   def searchAll(what: String): List[Member] = {
-    searchForEmail(what)
+    searchByEmail(what)
   }
 
   import play.api.libs.json._

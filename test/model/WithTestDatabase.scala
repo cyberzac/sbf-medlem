@@ -10,10 +10,10 @@ import scala.collection.immutable.TreeSet
 
 trait WithTestDatabase extends AroundExample {
 
- // val testDb = Map("db.default.url" -> "jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8")
+ val testDb = Map("db.default.url" -> "jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8")
 
   def around[T: AsResult](t: => T) = {
-    val app = FakeApplication() //(additionalConfiguration = testDb)
+    val app = FakeApplication()//additionalConfiguration = testDb)
     running(app) {
       new SchemaManager(app).dropCreateSchema
       AsResult(t)

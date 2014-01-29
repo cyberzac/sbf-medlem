@@ -24,11 +24,11 @@ class ApplicationSpec extends Specification {
 
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain ("Your new application is ready.")
+      contentAsString(home) must contain ("<title>Bitcoinföreningen</title>")
     }
 
     "render the registration page" in new WithApplication{
-      val home = route(FakeRequest(GET, "/register")).get
+      val home = route(FakeRequest(GET, "/newMember")).get
 
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
@@ -38,7 +38,7 @@ class ApplicationSpec extends Specification {
     "Return Ok  when registering a new member" in new WithApplication {
 
       val Some(result) = route(
-        FakeRequest(POST, "/submit").withFormUrlEncodedBody(
+        FakeRequest(POST, "/save").withFormUrlEncodedBody(
           ("replyto", "zac@cyberzac.se"),
           ("namn", "Martin Zachrison"),
           ("adress", "Prinsessvägen 3A"),

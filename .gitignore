@@ -5,6 +5,7 @@ target
 tmp
 .history
 dist
+conf/prod.conf
 /.idea
 /*.iml
 /out
