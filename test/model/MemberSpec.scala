@@ -25,6 +25,12 @@ class MemberSpec extends Specification with WithTestDatabase {
     expected must_== Some(kalle.copy(id=Some(Id(1))))
   }
 
+  "have a findById method" in running(FakeApplication()) {
+    setupMembers
+    val expected: Option[Member] = Member.findById(Id(1))
+    expected must_== Some(kalle.copy(id=Some(Id(1))))
+  }
+
   "have a findAll method" in running(FakeApplication()) {
     setupMembers
     val expected: List[Member] = Member.findAll

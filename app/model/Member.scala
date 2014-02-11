@@ -84,14 +84,14 @@ object Member {
     }
   }
 
-  //  def findById(id: Pk[Long]): Option[Member] = {
-  //    DB.withConnection {
-  //      implicit connection =>
-  //        SQL("select * from member where id = {id} ").on(
-  //          'id -> id
-  //        ).as(Member.simple.singleOpt)
-  //    }
-  //  }
+    def findById(id: Pk[Long]): Option[Member] = {
+      DB.withConnection {
+        implicit connection =>
+          SQL("select * from member where id = {id} ").on(
+            'id -> id
+          ).as(Member.simple.singleOpt)
+      }
+    }
 
   //  def update(member:Member) = {
   //    DB.withConnection {
@@ -157,6 +157,7 @@ object Member {
     def writes(o: Option[Pk[Long]]) = o match {
       case Some(Id(v)) => JsNumber(v)
       case None => JsNull
+      case x => JsUndefined(x.toString)
     }
   }
 
