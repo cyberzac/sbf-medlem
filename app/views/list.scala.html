@@ -3,6 +3,7 @@
 @main("Medlemslista") {
 <table class="table table-striped" id="members">
     <thead>
+    <th>Id</th>
     <th>Namn</th>
     <th>Mejl</th>
     <th>Adress</th>
@@ -15,8 +16,9 @@
     <tbody>
     @for(m <- members) {
     <tr>
-        <td>@m.email</td>
+        <td>@m.id</td>
         <td>@m.name</td>
+        <td>@m.email</td>
         <td>@m.address</td>
         <td>@m.zip</td>
         <td>@m.city</td>

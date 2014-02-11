@@ -16,7 +16,7 @@ class MemberSpec extends Specification with WithTestDatabase {
 
   "have a create method" in running(FakeApplication()) {
     val expected = Member.create(kalle)
-    expected must_== kalle
+    expected must_== kalle.copy(id=Some(Id(1)))
   }
 
   "have a findByEmail method" in running(FakeApplication()) {

@@ -80,7 +80,7 @@ object Member {
             'approved -> member.approved
           ).executeUpdate()
         Logger.debug("Stored member {}", member)
-        member // Todo read back id.
+        findByEmail(member.email).get
     }
   }
 
