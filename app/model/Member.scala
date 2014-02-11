@@ -12,7 +12,7 @@ import AnormExtension._
  *
  */
 case class Member(
-//                   id: Option[Pk[Long]],
+                   id: Option[Pk[Long]],
                    email: String,
                    name: String,
                    address: String,
@@ -21,7 +21,7 @@ case class Member(
                    comment: String,
                    createdAt: Long = DateTime.now.millisOfSecond().setCopy(0).getMillis, // Remove the millis
                    approved: Boolean = false
-                   )  {
+                   ) {
 
   def createdDateTime: DateTime = new DateTime(createdAt)
 
@@ -29,10 +29,10 @@ case class Member(
 
 object Member {
 
-  def apply(f: MemberForm) = new Member(f.epost, f.name, f.address, f.zip, f.city, f.comment)
+  def apply(f: MemberForm) = new Member(None, f.epost, f.name, f.address, f.zip, f.city, f.comment)
 
   val simple = {
-//    get[Pk[Long]]("member.id") ~
+    get[Pk[Long]]("member.id") ~
       get[String]("member.email") ~
       get[String]("member.name") ~
       get[String]("member.address") ~
@@ -41,9 +41,9 @@ object Member {
       get[String]("member.comment") ~
       get[DateTime]("member.created_date") ~
       get[Boolean]("member.approved") map {
-      case email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved => {
+      case id ~ email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved =>
         new Member(
-//          Some(id),
+          Some(id),
           email,
           name,
           address,
@@ -53,11 +53,10 @@ object Member {
           created.getMillis,
           approved
         )
-      }
     }
   }
 
-  def create(memberForm:MemberForm):Member = create(Member(memberForm))
+  def create(memberForm: MemberForm): Member = create(Member(memberForm))
 
   def create(member: Member): Member = {
     DB.withConnection {
@@ -66,10 +65,11 @@ object Member {
         SQL(
           """
             insert into member values (
-              {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
+              {id}, {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
             )
           """
         ).on(
+            'id -> member.id,
             'email -> member.email,
             'name -> member.name,
             'address -> member.address,
@@ -84,14 +84,39 @@ object Member {
     }
   }
 
-//  def findById(id: Pk[Long]): Option[Member] = {
-//    DB.withConnection {
-//      implicit connection =>
-//        SQL("select * from member where id = {id} ").on(
-//          'id -> id
-//        ).as(Member.simple.singleOpt)
-//    }
-//  }
+  //  def findById(id: Pk[Long]): Option[Member] = {
+  //    DB.withConnection {
+  //      implicit connection =>
+  //        SQL("select * from member where id = {id} ").on(
+  //          'id -> id
+  //        ).as(Member.simple.singleOpt)
+  //    }
+  //  }
+
+  //  def update(member:Member) = {
+  //    DB.withConnection {
+  //      implicit connection =>
+  //
+  //        SQL(
+  //          """
+  //            update  member set (
+  //              {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
+  //            )
+  //          """
+  //        ).on(
+  //            'email -> member.email,
+  //            'name -> member.name,
+  //            'address -> member.address,
+  //            'zip -> member.zip,
+  //            'city -> member.city,
+  //            'comment -> member.comment,
+  //            'created_date -> member.createdDateTime,
+  //            'approved -> member.approved
+  //          ).executeUpdate()
+  //        Logger.debug("Updated member {}", member)
+  //        member // Todo read back id.
+  //    }
+  //  }
 
   def findByEmail(email: String): Option[Member] = {
     DB.withConnection {
@@ -113,7 +138,7 @@ object Member {
     DB.withConnection {
       implicit connection =>
         SQL("select * from member where email like {email} ").on(
-          'email ->  s"%${email}%"
+          'email -> s"%$email%"
         ).as(Member.simple *)
     }
   }
@@ -125,15 +150,27 @@ object Member {
   import play.api.libs.json._
   import play.api.libs.functional.syntax._
 
-  implicit val memberWrites: Writes[Member] =  (
-    (__ \ 'email).write[String] and
-    (__ \ 'name).write[String] and
-    (__ \ 'address).write[String] and
-    (__ \ 'zip).write[String] and
-    (__ \ 'city).write[String] and
-    (__ \ 'comments).write[String] and
-    (__ \ 'created_date).write[Long] and
-    (__ \ 'approved).write[Boolean]
+  /**
+   * Serializer for Int types.
+   */
+  implicit object OptionPkLongWrites extends Writes[Option[Pk[Long]]] {
+    def writes(o: Option[Pk[Long]]) = o match {
+      case Some(Id(v)) => JsNumber(v)
+      case None => JsNull
+    }
+  }
+
+
+  implicit val memberWrites: Writes[Member] = (
+    (__ \ 'id).write[Option[Pk[Long]]] and
+      (__ \ 'email).write[String] and
+      (__ \ 'name).write[String] and
+      (__ \ 'address).write[String] and
+      (__ \ 'zip).write[String] and
+      (__ \ 'city).write[String] and
+      (__ \ 'comments).write[String] and
+      (__ \ 'created_date).write[Long] and
+      (__ \ 'approved).write[Boolean]
     )(unlift(Member.unapply))
 
 }
