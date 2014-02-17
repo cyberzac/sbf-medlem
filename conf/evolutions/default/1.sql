@@ -8,7 +8,7 @@ create table member (
     city varchar(255),
     comment varchar(255),
     created_date timestamp not null,
-    approved boolean not null
+    verified boolean not null
 );
 
 

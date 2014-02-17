@@ -44,10 +44,14 @@ class MemberSpec extends Specification with WithTestDatabase {
     Member.searchByEmail("nomail").size must_== 0
   }
   
-//  "have an approve method" in running(FakeApplication()) {
-//    setupMembers
-//    Member.create(kalle)
-//  }
+  "have an verify method" in running(FakeApplication()) {
+    setupMembers
+    val kalle = Member.findById(Id(1)).get
+    kalle.verified must beFalse
+    val verified: Member = Member.verify(kalle)
+    verified.verified must beTrue
+    Member.findById(Id(1)).get.verified must beTrue
+  }
 
   def setupMembers = {
     Member.create(kalle)

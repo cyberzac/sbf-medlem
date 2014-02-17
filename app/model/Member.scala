@@ -20,7 +20,7 @@ case class Member(
                    city: String,
                    comment: String,
                    createdAt: Long = DateTime.now.millisOfSecond().setCopy(0).getMillis, // Remove the millis
-                   approved: Boolean = false
+                   verified: Boolean = false
                    ) {
 
   def createdDateTime: DateTime = new DateTime(createdAt)
@@ -28,6 +28,22 @@ case class Member(
 }
 
 object Member {
+  def verify(member: Member): Member = {
+    DB.withConnection {
+      implicit connection =>
+        SQL(
+          """
+            update  member set verified = true where id = {id}
+          """
+        ).on(
+            'id -> member.id
+          ).executeUpdate()
+        val approved: Member = findById(member.id.get).get
+        Logger.debug("Verified member {}", approved)
+        approved
+    }
+  }
+
 
   def apply(f: MemberForm) = new Member(None, f.epost, f.name, f.address, f.zip, f.city, f.comment)
 
@@ -40,7 +56,7 @@ object Member {
       get[String]("member.city") ~
       get[String]("member.comment") ~
       get[DateTime]("member.created_date") ~
-      get[Boolean]("member.approved") map {
+      get[Boolean]("member.verified") map {
       case id ~ email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved =>
         new Member(
           Some(id),
@@ -77,7 +93,7 @@ object Member {
             'city -> member.city,
             'comment -> member.comment,
             'created_date -> member.createdDateTime,
-            'approved -> member.approved
+            'approved -> member.verified
           ).executeUpdate()
         Logger.debug("Stored member {}", member)
         findByEmail(member.email).get
@@ -93,30 +109,30 @@ object Member {
       }
     }
 
-  //  def update(member:Member) = {
-  //    DB.withConnection {
-  //      implicit connection =>
-  //
-  //        SQL(
-  //          """
-  //            update  member set (
-  //              {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
-  //            )
-  //          """
-  //        ).on(
-  //            'email -> member.email,
-  //            'name -> member.name,
-  //            'address -> member.address,
-  //            'zip -> member.zip,
-  //            'city -> member.city,
-  //            'comment -> member.comment,
-  //            'created_date -> member.createdDateTime,
-  //            'approved -> member.approved
-  //          ).executeUpdate()
-  //        Logger.debug("Updated member {}", member)
-  //        member // Todo read back id.
-  //    }
-  //  }
+    def update(member:Member) = {
+      DB.withConnection {
+        implicit connection =>
+
+          SQL(
+            """
+              update  member set (
+                {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
+              )
+            """
+          ).on(
+              'email -> member.email,
+              'name -> member.name,
+              'address -> member.address,
+              'zip -> member.zip,
+              'city -> member.city,
+              'comment -> member.comment,
+              'created_date -> member.createdDateTime,
+              'approved -> member.verified
+            ).executeUpdate()
+          Logger.debug("Updated member {}", member)
+          findById(member.id.get)
+      }
+    }
 
   def findByEmail(email: String): Option[Member] = {
     DB.withConnection {
