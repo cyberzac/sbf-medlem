@@ -38,9 +38,9 @@ object Member {
         ).on(
             'id -> member.id
           ).executeUpdate()
-        val approved: Member = findById(member.id.get).get
-        Logger.debug("Verified member {}", approved)
-        approved
+        val verified: Member = findById(member.id.get).get
+        Logger.debug("Verified member {}", verified)
+        verified
     }
   }
 
@@ -57,7 +57,7 @@ object Member {
       get[String]("member.comment") ~
       get[DateTime]("member.created_date") ~
       get[Boolean]("member.verified") map {
-      case id ~ email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ approved =>
+      case id ~ email ~ name ~ address ~ zip ~ city ~ comment ~ created ~ verified =>
         new Member(
           Some(id),
           email,
@@ -67,7 +67,7 @@ object Member {
           city,
           comment,
           created.getMillis,
-          approved
+          verified
         )
     }
   }
@@ -81,7 +81,7 @@ object Member {
         SQL(
           """
             insert into member values (
-              {id}, {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
+              {id}, {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {verified}
             )
           """
         ).on(
@@ -93,46 +93,55 @@ object Member {
             'city -> member.city,
             'comment -> member.comment,
             'created_date -> member.createdDateTime,
-            'approved -> member.verified
+            'verified -> member.verified
           ).executeUpdate()
         Logger.debug("Stored member {}", member)
         findByEmail(member.email).get
     }
   }
 
-    def findById(id: Pk[Long]): Option[Member] = {
-      DB.withConnection {
-        implicit connection =>
-          SQL("select * from member where id = {id} ").on(
-            'id -> id
-          ).as(Member.simple.singleOpt)
-      }
+  def findById(id: Pk[Long]): Option[Member] = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select * from member where id = {id} ").on(
+          'id -> id
+        ).as(Member.simple.singleOpt)
     }
+  }
 
-    def update(member:Member) = {
-      DB.withConnection {
-        implicit connection =>
+  def update(member: Member) = {
+    DB.withConnection {
+      implicit connection =>
 
-          SQL(
-            """
-              update  member set (
-                {email}, {name}, {address}, {zip}, {city}, {comment}, {created_date}, {approved}
-              )
-            """
-          ).on(
-              'email -> member.email,
-              'name -> member.name,
-              'address -> member.address,
-              'zip -> member.zip,
-              'city -> member.city,
-              'comment -> member.comment,
-              'created_date -> member.createdDateTime,
-              'approved -> member.verified
-            ).executeUpdate()
-          Logger.debug("Updated member {}", member)
-          findById(member.id.get)
-      }
+        SQL(
+          """
+              update member set
+                email = {email},
+                name = {name},
+                address = {address},
+                zip = {zip},
+                city = {city},
+                comment ={comment},
+                created_date = {created_date},
+                verified = {verified}
+              where id = {id}
+          """
+        ).on(
+            'email -> member.email,
+            'comment -> member.comment,
+            'id -> member.id,
+            'name -> member.name,
+            'address -> member.address,
+            'zip -> member.zip,
+            'city -> member.city,
+            'comment -> member.comment,
+            'created_date -> member.createdDateTime,
+            'verified -> member.verified
+          ).executeUpdate()
+        Logger.debug("Updated member {}", member)
+        findById(member.id.get)
     }
+  }
 
   def findByEmail(email: String): Option[Member] = {
     DB.withConnection {
@@ -187,7 +196,7 @@ object Member {
       (__ \ 'city).write[String] and
       (__ \ 'comments).write[String] and
       (__ \ 'created_date).write[Long] and
-      (__ \ 'approved).write[Boolean]
+      (__ \ 'verified).write[Boolean]
     )(unlift(Member.unapply))
 
 }

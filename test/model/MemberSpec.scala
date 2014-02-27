@@ -53,6 +53,27 @@ class MemberSpec extends Specification with WithTestDatabase {
     Member.findById(Id(1)).get.verified must beTrue
   }
 
+
+  private val verified: Boolean = true
+
+  "have an update method" in running(FakeApplication()) {
+    setupMembers
+    val kalle = Member.findById(Id(1)).get
+    val u: Member = kalle
+      .copy(email = "email2")
+      .copy(name = "name2" )
+      .copy(address = "address2")
+      .copy(zip = "zip2")
+      .copy(city = "city2")
+      .copy(comment = "comment2")
+      .copy(createdAt = 2000)
+     .copy(verified = verified)
+    Member.update(u)
+    val updated: Member = Member.findById(Id(1)).get
+    val expected: Member = Member(Some(Id(1)), "email2", "name2", "address2", "zip2", "city2", "comment2", 2000, verified)
+    updated must_== expected
+  }
+
   def setupMembers = {
     Member.create(kalle)
     Member.create(palle)

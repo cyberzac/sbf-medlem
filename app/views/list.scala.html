@@ -11,7 +11,7 @@
     <th>Ort</th>
     <th>Kommentar</th>
     <th>Skapad</th>
-    <th>Godkänd</th>
+    <th>Verifierad</th>
     </thead>
     <tbody>
     @for(m <- members) {
@@ -24,7 +24,7 @@
         <td>@m.city</td>
         <td>@m.comment</td>
         <td>@m.createdDateTime</td>
-        <td>@m.approved</td>
+        <td>@m.verified</td>
     </tr>
     }
     </tbody>

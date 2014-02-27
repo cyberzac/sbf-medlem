@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc.{Action, Controller}
 import model.Member
-import anorm.Pk
+import anorm.{Id, Pk}
 
 /**
  *
@@ -14,11 +14,15 @@ object Api extends Controller {
   def list() = Action {
     Ok(Json.toJson(Member.findAll))
   }
+  
+  def verify(id:Int) = toJson(id, {Member.verify})
 
-  def verify(id: Pk[Long]) = Action {
-    val member = Member.findById(id)
+  def get(id:Int) = toJson(id, (m:Member) => m)
+  
+  private def toJson(id:Int, f :(Member) => Member) =  Action {
+    val member = Member.findById(Id(id))
     if (member.isDefined)
-      Ok(Json.toJson(Member.verify(member.get)))
+      Ok(Json.toJson(f(member.get)))
     else
       NotFound
   }

@@ -11,7 +11,8 @@ POST   /save                   controllers.Application.save
 
 # API
 GET  /api/list                 controllers.Api.list
-PUT  /api/:id/verify      controllers.Api.approve(id:int)
+GET  /api/:id                 controllers.Api.get(id:Int)
+PUT  /api/:id/verify      controllers.Api.verify(id:Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
